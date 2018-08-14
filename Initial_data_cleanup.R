@@ -43,4 +43,23 @@ Load_history_Tidy <- Load_history %>%
          Time_stamp = create_time_stamp(Date, Hour)) %>% 
   select(-year, -month, -day, -Date, - time, -Hour)
 
+#### Now for the Temperature data
+temperature_history <- temperature_history %>% 
+  mutate(Date = create_date(year, month, day))
+
+Temp_history_Tidy <- temperature_history %>%  
+  gather(key = "time", value = "Temp", starts_with("h")) %>% 
+  mutate(Hour = strip_time(time),
+         Time_stamp = create_time_stamp(Date, Hour)) %>% 
+  select(-year, -month, -day, -Date, - time, -Hour)
+
+write_feather(Load_history_Tidy,"Load_tidy.feather")
+write_feather(Temp_history_Tidy,"Temp_tidy.feather")
+
+
+##The temperature stations do not correspond to load zones, so
+##we will spread the data out, add an average value and then join with the
+##load data. This should let us use the data for modeling.
+
+All_data_tidy <- left_join(Load_history_Tidy, Temp_history_Tidy, by = )
 
