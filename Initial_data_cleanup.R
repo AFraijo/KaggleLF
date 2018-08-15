@@ -1,5 +1,6 @@
 ##New Try, years later
 ##Author: Me
+##Data comes from https://www.kaggle.com/c/global-energy-forecasting-competition-2012-load-forecasting/data
 
 library(tidyverse)
 library(lubridate)
@@ -25,7 +26,7 @@ Load_history <- Load_history %>%
   mutate_at(vars(starts_with("h")), funs(as.numeric(.)))
 ##funtions to create time stamps
 strip_time <- function(STRING){
-  hour1 <- substr(STRING,2,2)
+  hour1 <- substring(STRING,2)
   hour2 <- as.character(as.numeric(hour1))
   time <- paste(hour2,'00',sep=':')
   return(time)
@@ -60,6 +61,27 @@ write_feather(Temp_history_Tidy,"Temp_tidy.feather")
 ##The temperature stations do not correspond to load zones, so
 ##we will spread the data out, add an average value and then join with the
 ##load data. This should let us use the data for modeling.
+##(1, 162625, 180687, 198749, 216811, 234873, 252935, 270997, 289059, 307121, 325183)
 
-All_data_tidy <- left_join(Load_history_Tidy, Temp_history_Tidy, by = )
+Temp_hist_spread <- Temp_history_Tidy %>%  
+  spread(station_id, Temp)
 
+All_data_tidy <- left_join(Load_history_Tidy, Temp_hist_spread, by = "Time_stamp")
+All_data_tidy <- All_data_tidy %>% mutate(Average = (`1` + `2` + `3` + `4` + `5` + `6` + `8` + `9` + `10` + `11`)/11) %>% 
+  rename(Station_1 = `1`,
+         Station_2 = `2`,
+         Station_3 = `3`,
+         Station_4 = `4`,
+         Station_5 = `5`,
+         Station_6 = `6`,
+         Station_7 = `7`,
+         Station_8 = `8`,
+         Station_9 = `9`,
+         Station_10 = `10`,
+         Station_11 = `11`)
+  
+
+  
+  
+  
+  
