@@ -80,8 +80,8 @@ All_data_tidy <- All_data_tidy %>% mutate(Average = (`1` + `2` + `3` + `4` + `5`
          Station_10 = `10`,
          Station_11 = `11`)
   
-
+write_feather(All_data_tidy, "All_data_tidy.feather")
   
-  
+rm(Load_history, Load_history_Tidy, temperature_history, Temp_hist_spread, Temp_history_Tidy)  
   
   
