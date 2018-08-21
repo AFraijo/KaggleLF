@@ -18,10 +18,17 @@ options(scipen = 100000000)
 ##Ok, so after all that we actually need to add hour, month, and weekday back in
 ##so that we can roll up to those
 ##Actually, could I have use the tsibble index_by variabe?
+
 All_data_tidy <- All_data_tidy %>% 
   mutate(Month = month(Time_stamp, label = TRUE, abbr = FALSE),
          Day = wday(Time_stamp, label = TRUE, abbr = FALSE),
          Hour = hour(Time_stamp))
+
+##All_data_tidy <- All_data_tidy %>% 
+##  mutate(Month = month(Time_stamp, label = TRUE, abbr = FALSE),
+##         Day = wday(Time_stamp, label = TRUE, abbr = FALSE),
+##         Hour = hour(Time_stamp))
+
 
 
 
@@ -34,10 +41,14 @@ All_data_tsbl %>% group_by(zone_id) %>%
   facet_wrap(~zone_id, ncol = 5) + 
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90))
+
+  facet_wrap(~zone_id, ncol = 5)
+
 ##This is ok, but wonky. Let's try a regular dplyr approach
 All_data_tidy %>% group_by(zone_id, Month) %>% 
   summarize(Ave_kWh = mean(kWh, na.rm = TRUE)) %>% 
   ggplot(aes(x = Month, y = Ave_kWh)) + geom_col() +
+
   facet_wrap(~zone_id, ncol = 5) + 
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90))
@@ -50,5 +61,8 @@ All_data_tsbl %>% filter(zone_id == 4) %>%
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90))
 ##Maybe this is not odd. Maybe this zone is just not a high volume zone
+
+  facet_wrap(~zone_id, ncol = 5)
+
 
 
