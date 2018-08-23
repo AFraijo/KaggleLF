@@ -81,3 +81,17 @@ All_data_tidy %>% group_by(zone_id, Hour) %>%
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90))
 ##Also interesting
+
+##attempt to decompose
+Zone_1_decompose_add <- All_data_tsbl %>% filter(zone_id == 1, !is.na(kWh)) %>% select(Time_stamp, kWh) %>%
+  as.ts() %>% decompose("additive")
+plot(Zone_1_decompose_add)
+
+Zone_1_decompose_mult <- All_data_tsbl %>% filter(zone_id == 1, !is.na(kWh)) %>% select(Time_stamp, kWh) %>%
+  as.ts() %>% decompose("multiplicative")
+plot(Zone_1_decompose_mult)
+
+
+
+
+
