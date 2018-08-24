@@ -77,18 +77,6 @@ Monthly_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>%
 
 
 
-%>% 
-  ggplot(aes(x = Month)) + 
-  geom_line(aes(y = `10`, group = zone_id), colour = "#E69F00") +
-  geom_line(aes(y = `25`, group = zone_id), colour = "#56B4E9") +
-  geom_line(aes(y = `50`, group = zone_id), colour = "#000000") +
-  geom_line(aes(y = `75`, group = zone_id), colour = "#009E73") +
-  geom_line(aes(y = `90`, group = zone_id), colour = "#CC79A7") +
-  facet_wrap(~zone_id, ncol = 5) + 
-  theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90))
-
-
 
 ##something is very odd with 4, but also 5, 8, 9
 All_data_tsbl %>% filter(zone_id == 4) %>% 
