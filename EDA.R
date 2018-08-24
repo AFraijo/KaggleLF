@@ -51,6 +51,45 @@ All_data_tidy %>% group_by(zone_id, Month) %>%
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90))
 
+##Copying idea from Rob Hyndman et. al
+##http://www.nxtbook.com/nxtbooks/pes/powerenergy_050618/index.php#/22
+
+Monthly_quantiles <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
+  select(zone_id, Month, kWh) %>% group_by(zone_id, Month) %>% 
+  summarize(`10` = quantile(kWh, probs = 0.1),
+            `25` = quantile(kWh, probs = 0.25),
+            `50` = quantile(kWh, probs = 0.5),
+            `75` = quantile(kWh, probs = 0.75),
+            `90` = quantile(kWh, probs = 0.9)) 
+
+##add jitter and labels
+Monthly_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
+  select(zone_id, Month, kWh) %>% 
+  ggplot(aes(x = Month, y = kWh)) + geom_point(aes(group = zone_id)) +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `10`, group = zone_id), colour = "#E69F00") +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `25`, group = zone_id), colour = "#56B4E9") +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `50`, group = zone_id), colour = "#000000") +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `75`, group = zone_id), colour = "#009E73") +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `90`, group = zone_id), colour = "#CC79A7") +
+  facet_wrap(~zone_id, ncol = 5) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90))
+
+
+
+%>% 
+  ggplot(aes(x = Month)) + 
+  geom_line(aes(y = `10`, group = zone_id), colour = "#E69F00") +
+  geom_line(aes(y = `25`, group = zone_id), colour = "#56B4E9") +
+  geom_line(aes(y = `50`, group = zone_id), colour = "#000000") +
+  geom_line(aes(y = `75`, group = zone_id), colour = "#009E73") +
+  geom_line(aes(y = `90`, group = zone_id), colour = "#CC79A7") +
+  facet_wrap(~zone_id, ncol = 5) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90))
+
+
+
 ##something is very odd with 4, but also 5, 8, 9
 All_data_tsbl %>% filter(zone_id == 4) %>% 
   index_by(Month = yearmonth(Time_stamp)) %>% 
