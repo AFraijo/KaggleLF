@@ -63,19 +63,25 @@ Monthly_quantiles <- All_data_tidy %>% filter(!is.na(kWh)) %>%
             `90` = quantile(kWh, probs = 0.9)) 
 
 ##add jitter and labels
+cols <- c("10" = "#E69F00", "25" = "#56B4E9", "50" = "#F0E442", "75" = "#009E73", "90" = "#CC79A7")
+
 Monthly_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
   select(zone_id, Month, kWh) %>% 
-  ggplot(aes(x = Month, y = kWh)) + geom_point(aes(group = zone_id)) +
-    geom_line(data = Monthly_quantiles, aes(x = Month, y = `10`, group = zone_id), colour = "#E69F00") +
-    geom_line(data = Monthly_quantiles, aes(x = Month, y = `25`, group = zone_id), colour = "#56B4E9") +
-    geom_line(data = Monthly_quantiles, aes(x = Month, y = `50`, group = zone_id), colour = "#000000") +
-    geom_line(data = Monthly_quantiles, aes(x = Month, y = `75`, group = zone_id), colour = "#009E73") +
-    geom_line(data = Monthly_quantiles, aes(x = Month, y = `90`, group = zone_id), colour = "#CC79A7") +
+  ggplot(aes(x = Month, y = kWh)) + geom_point(aes(group = zone_id)) + geom_jitter(size = .1, alpha = 0.1) + 
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `10`, group = zone_id, colour = "10")) +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `25`, group = zone_id, colour = "25")) +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `50`, group = zone_id, colour = "50")) +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `75`, group = zone_id, colour = "75")) +
+    geom_line(data = Monthly_quantiles, aes(x = Month, y = `90`, group = zone_id, colour = "90")) +
   facet_wrap(~zone_id, ncol = 5) + 
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90))
+  labs(title = "Monthly Energy Use By Zone",
+       subtitle = "With Quantile Curves") + 
+  scale_colour_manual(name = "Quantile", values = cols)+ 
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") 
+  
 
-
+##Monthly_Scatter
 
 
 ##something is very odd with 4, but also 5, 8, 9
@@ -91,22 +97,57 @@ All_data_tsbl %>% filter(zone_id == 4) %>%
 ##not help
 
 ###Let's look at weekday
-All_data_tidy %>% group_by(zone_id, Day) %>% 
-  summarize(Ave_kWh = mean(kWh, na.rm = TRUE)) %>% 
-  ggplot(aes(x = Day, y = Ave_kWh)) + geom_line(aes(group = zone_id)) +
+Daily_quantiles <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
+  select(zone_id, Day, kWh) %>% group_by(zone_id, Day) %>% 
+  summarize(`10` = quantile(kWh, probs = 0.1),
+            `25` = quantile(kWh, probs = 0.25),
+            `50` = quantile(kWh, probs = 0.5),
+            `75` = quantile(kWh, probs = 0.75),
+            `90` = quantile(kWh, probs = 0.9))
+
+Daily_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>% select(zone_id, Day, kWh) %>% 
+  ggplot(aes(x = Day, y = kWh)) + geom_point(aes(group = zone_id)) + geom_jitter(size = .1, alpha = 0.1) + 
+  geom_line(data = Daily_quantiles, aes(x = Day, y = `10`, group = zone_id, colour = "10")) +
+  geom_line(data = Daily_quantiles, aes(x = Day, y = `25`, group = zone_id, colour = "25")) +
+  geom_line(data = Daily_quantiles, aes(x = Day, y = `50`, group = zone_id, colour = "50")) +
+  geom_line(data = Daily_quantiles, aes(x = Day, y = `75`, group = zone_id, colour = "75")) +
+  geom_line(data = Daily_quantiles, aes(x = Day, y = `90`, group = zone_id, colour = "90")) +
   facet_wrap(~zone_id, ncol = 5) + 
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90))
+  labs(title = "Zone Energy Use By Day of Week",
+       subtitle = "With Quantile Curves") + 
+  scale_colour_manual(name = "Quantile",  values = cols)+ 
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") 
+
+##Daily_Scatter
+
 ##this is much more interesting. 3,5,6,7,10,11,17,20 show what you would expect
 ##with the peaks in the middle
 
 ##Hour
-All_data_tidy %>% group_by(zone_id, Hour) %>% 
-  summarize(Ave_kWh = mean(kWh, na.rm = TRUE)) %>% 
-  ggplot(aes(x = Hour, y = Ave_kWh)) + geom_line(aes(group = zone_id)) +
+Hourly_quantiles <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
+  select(zone_id, Hour, kWh) %>% group_by(zone_id, Hour) %>% 
+  summarize(`10` = quantile(kWh, probs = 0.1),
+            `25` = quantile(kWh, probs = 0.25),
+            `50` = quantile(kWh, probs = 0.5),
+            `75` = quantile(kWh, probs = 0.75),
+            `90` = quantile(kWh, probs = 0.9))
+
+Hourly_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>% select(zone_id, Hour, kWh) %>% 
+  ggplot(aes(x = Hour, y = kWh)) + geom_point(aes(group = zone_id)) + geom_jitter(size = .1, alpha = 0.1) + 
+  geom_line(data = Hourly_quantiles, aes(x = Hour, y = `10`, group = zone_id, colour = "10")) +
+  geom_line(data = Hourly_quantiles, aes(x = Hour, y = `25`, group = zone_id, colour = "25")) +
+  geom_line(data = Hourly_quantiles, aes(x = Hour, y = `50`, group = zone_id, colour = "50")) +
+  geom_line(data = Hourly_quantiles, aes(x = Hour, y = `75`, group = zone_id, colour = "75")) +
+  geom_line(data = Hourly_quantiles, aes(x = Hour, y = `90`, group = zone_id, colour = "90")) +
   facet_wrap(~zone_id, ncol = 5) + 
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90))
+  labs(title = "Zone Energy Use By Hour",
+       subtitle = "With Quantile Curves") + 
+  scale_colour_manual(name = "Quantile",  values = cols)+ 
+  theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") 
+
+##Hourly_Scatter
 ##Also interesting
 
 ##attempt to decompose
