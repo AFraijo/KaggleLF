@@ -204,6 +204,16 @@ Zone_1_decompose_mult <- All_data_tsbl %>% filter(zone_id == 1, !is.na(kWh)) %>%
   as.ts() %>% decompose("multiplicative")
 plot(Zone_1_decompose_mult)
 
+##This is no good. This data is hourly, so it has daily, weekly,(maybe monthly,) and yearly periods
+##In increments in the data this is 24, 168, 8766
+##TS objects don't account for this many periods
+##I sould like to use tsibblestates and fable, but the development versions appear to be buggy, so msts it is
+
+library(forecast)
+Zone_1_msts <- All_data_tidy %>% filter(zone_id == 1, !is.na(kWh)) %>% select(kWh) %>% 
+  msts(seasonal.periods = c(24,168,8766))
+msts_plt <- Zone_1_msts %>% mstl() %>% autoplot() + xlab("Year") + theme_bw()
+
 
 
 
