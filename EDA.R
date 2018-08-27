@@ -57,7 +57,7 @@ YM_Scatter <- All_data_tsbl %>% index_by(Month = yearmonth(Time_stamp)) %>%
   scale_colour_manual(name = "Quantile", values = cols)+ 
   theme(axis.text.x = element_text(angle = 90), legend.position = "bottom")
 
-YM_Scatter
+##YM_Scatter
 
 ##Try pulling 1,4,5,8 into one group? Then 9,10,13,14?
 YM_Q_limited <- YM_quartile %>% filter(zone_id %in% c(1,4,5,8))
@@ -78,7 +78,7 @@ YM_Limited <- All_data_tsbl%>% filter(zone_id %in% c(1,4,5,8), !is.na(kWh)) %>%
   scale_colour_manual(name = "Quantile", values = cols)+ 
   theme(axis.text.x = element_text(angle = 90), legend.position = "bottom")
 
-YM_Limited
+##YM_Limited
 
 ##This is ok, but wonky. Let's try a regular dplyr approach
 All_data_tidy %>% group_by(zone_id, Month) %>% 
@@ -182,8 +182,18 @@ Hourly_Scatter <- All_data_tidy %>% filter(!is.na(kWh)) %>% select(zone_id, Hour
   scale_colour_manual(name = "Quantile",  values = cols)+ 
   theme(axis.text.x = element_text(angle = 90), legend.position = "bottom") 
 
-Hourly_Scatter
+##Hourly_Scatter
 ##Also interesting
+
+##plots of ave temp vs kWh
+Temp_kWH <- All_data_tidy %>% filter(!is.na(kWh)) %>% 
+  ggplot(aes(x = Average, y = kWh)) + 
+  geom_point(aes(group = zone_id)) + geom_jitter(size = .1, alpha = 0.1) + 
+  geom_smooth(aes(group = zone_id), se = FALSE) +
+  facet_wrap(~ zone_id, ncol = 5) + 
+  theme_bw() + 
+  labs(title = "kWh by Average Temperature")
+Temp_kWH
 
 ##attempt to decompose
 Zone_1_decompose_add <- All_data_tsbl %>% filter(zone_id == 1, !is.na(kWh)) %>% select(Time_stamp, kWh) %>%
