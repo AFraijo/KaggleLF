@@ -195,6 +195,18 @@ Temp_kWH <- All_data_tidy %>% filter(!is.na(kWh)) %>%
   labs(title = "kWh by Average Temperature")
 Temp_kWH
 
+
+##plots of Temp by zone
+Temp_zone_plt <- Temp_tidy %>% filter(!is.na(Temp)) %>% 
+  ggplot(aes(x = Time_stamp, y = Temp)) + geom_line(aes(group = station_id)) + 
+  facet_wrap(~ station_id, ncol = 5) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  labs(title = "Hourly Temperature",
+       subtitle = "By Station ID")
+Temp_zone_plt
+
+
 ##attempt to decompose
 Zone_1_decompose_add <- All_data_tsbl %>% filter(zone_id == 1, !is.na(kWh)) %>% select(Time_stamp, kWh) %>%
   as.ts() %>% decompose("additive")
@@ -213,6 +225,7 @@ library(forecast)
 Zone_1_msts <- All_data_tidy %>% filter(zone_id == 1, !is.na(kWh)) %>% select(kWh) %>% 
   msts(seasonal.periods = c(24,168,8766))
 msts_plt <- Zone_1_msts %>% mstl() %>% autoplot() + xlab("Year") + theme_bw()
+msts_plt
 
 
 
